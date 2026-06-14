@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>온유목장 · 기도제목 · 신앙 결단 기록 v5</title>
+<style>
+  :root {
+    --bg: #fbf7f2;
+    --surface: #ffffff;
+    --ink: #2b2118;
+    --ink-soft: #6b5d50;
+    --ink-faint: #9c8c7c;
+    --line: #ebe2d6;
+    --accent: #c2410c;
+    --accent-soft: #fde8d5;
+    --ember: #ea580c;
+    --gold: #b45309;
+    --gold-soft: #fef3c7;
+    --ok: #047857;
+    --ok-soft: #d1fae5;
+    --purple: #7c3aed;
+    --purple-soft: #ede9fe;
+    --shadow: 0 1px 2px rgba(43,33,24,.04), 0 8px 24px rgba(43,33,24,.06);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+                 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 20px 20px 80px; }
+
+  .share-banner {
+    background: var(--ok-soft);
+    color: var(--ok);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #a7f3d0;
+  }
+  .share-banner .dot {
+    width: 8px; height: 8px;
+    background: var(--ok);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .share-banner.offline { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+  .share-banner.offline .dot { background: #991b1b; animation: none; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .share-banner .sync-info { margin-left: auto; font-size: 11px; font-weight: 500; opacity: 0.7; }
+
+  .hero {
+    text-align: center;
+    padding: 24px 16px 20px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .hero .icon { font-size: 28px; margin-bottom: 8px; }
+  .hero .mokjang-name {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 3px 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .hero h1 {
+    margin: 0 0 6px;
+    font-size: 24px;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+  }
+  .hero p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+  .settings-btn {
+    position: absolute;
+    top: 18px; right: 6px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--ink-soft);
+  }
+  .settings-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .stat-card .num {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.2;
+  }
+  .stat-card .label {
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  /* 설정 패널 */
+  .settings-panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+    display: none;
+  }
+  .settings-panel.open { display: block; }
+  .settings-panel h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .settings-panel .desc {
+    margin: 0 0 14px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .name-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .name-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px 5px 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .name-pill .remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px; height: 16px;
+    background: rgba(194,65,12,0.18);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 11px;
+    line-height: 1;
+    border: none;
+    color: var(--accent);
+    padding: 0;
+  }
+  .name-pill .remove:hover { background: rgba(194,65,12,0.35); }
+  .add-name-row {
+    display: flex;
+    gap: 8px;
+  }
+  .add-name-row input { flex: 1; }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    background: #efe6d8;
+    border-radius: 10px;
+    padding: 4px;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .tab.active {
+    background: var(--surface);
+    color: var(--accent);
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+
+  .input-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 16px 14px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .input-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .input-header h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .type-badge.prayer { background: var(--purple-soft); color: var(--purple); }
+  .type-badge.resolution { background: var(--gold-soft); color: var(--gold); }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: minmax(120px, auto) 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  select, input[type="text"], textarea {
+    width: 100%;
+    padding: 9px 11px;
+    background: #fdfaf5;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    transition: border-color .15s, background .15s;
+  }
+  select:focus, input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #ffffff;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 64px;
+    line-height: 1.6;
+  }
+  .anon-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 0;
+  }
+  .anon-toggle input { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+  .submit-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .submit-row .hint {
+    flex: 1;
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+
+  button {
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  button.primary:hover { background: #9a330a; border-color: #9a330a; color: #fff; }
+
+  .filter-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    padding: 5px 11px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all .12s;
+  }
+  .filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-faint);
+    font-size: 13px;
+    background: var(--surface);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+  }
+  .empty-state .big { font-size: 32px; margin-bottom: 8px; display: block; }
+
+  .entry {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 13px 14px;
+    box-shadow: var(--shadow);
+    transition: border-color .15s;
+  }
+  .entry.done { background: #f7f9f7; }
+  .entry-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .entry-type {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .entry-type.prayer { background: var(--purple-soft); color: var(--purple); }
+  .entry-type.resolution { background: var(--gold-soft); color: var(--gold); }
+  .entry-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .entry-name.anon { color: var(--ink-faint); font-style: italic; font-weight: 500; }
+  .entry-date {
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-left: auto;
+  }
+  .entry-content {
+    font-size: 14px;
+    color: var(--ink);
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.55;
+  }
+  .entry.done .entry-content { color: var(--ink-soft); }
+  .entry-edited {
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .entry-footer {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .status-badge.answered { background: var(--ok-soft); color: var(--ok); }
+  .status-badge.inprogress { background: #fed7aa; color: #9a3412; }
+  .status-badge.done { background: #dbeafe; color: #1e40af; }
+
+  .mini-btn {
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--ink-soft);
+    transition: all .12s;
+  }
+  .mini-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .mini-btn.danger:hover { border-color: #991b1b; color: #991b1b; }
+  .entry-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+  }
+
+  .edit-area { margin-top: 4px; }
+  .edit-area textarea {
+    min-height: 70px;
+    border-color: var(--accent);
+    background: #fff;
+  }
+  .edit-buttons {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 14px 12px 80px; }
+    .hero h1 { font-size: 20px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .input-row { grid-template-columns: 1fr; }
+    .entry-date { margin-left: 0; font-size: 10px; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="share-banner" id="share-banner">
+    <span class="dot"></span>
+    <span id="share-status">연결 중...</span>
+    <span class="sync-info" id="sync-info"></span>
+  </div>
+
+  <div class="hero">
+    <button type="button" class="settings-btn" onclick="toggleSettings()">⚙️ 명단 관리</button>
+    <div class="icon">🙏</div>
+    <span class="mokjang-name">🌿 온유목장</span>
+    <h1>기도제목 · 신앙 결단 누적 기록</h1>
+    <p>함께 기도하고, 함께 순종하며, 함께 기억합니다</p>
+  </div>
+
+  <!-- 설정: 명단 관리 -->
+  <div class="settings-panel" id="settings-panel">
+    <h3>⚙️ 목장 명단 관리</h3>
+    <p class="desc">여기서 추가/삭제한 명단은 모든 참석자에게 공유됩니다. 이름을 지워도 기존 기록은 사라지지 않습니다.</p>
+    <div class="name-list" id="name-list"></div>
+    <div class="add-name-row">
+      <input type="text" id="new-name-input" placeholder="추가할 이름 입력 후 Enter">
+      <button type="button" class="primary" onclick="addName()">+ 추가</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <span class="num" id="stat-total">0</span>
+      <div class="label">전체 기록</div>
+    </div>
+    <div class="stat-card">
+      <span class="num" id="stat-prayer">0</span>
+      <div class="label">기도제목</div>
+    </div>
+    <div class="stat-card">
+      <span class="num" id="stat-resolution">0</span>
+      <div class="label">결단/순종</div>
+    </div>
+    <div class="stat-card">
+      <span class="num" id="stat-answered">0</span>
+      <div class="label">응답/완료</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button type="button" id="tab-prayer" class="tab active" onclick="setTab('prayer', this)">🙏 기도제목 추가</button>
+    <button type="button" id="tab-resolution" class="tab" onclick="setTab('resolution', this)">✨ 결단/순종 추가</button>
+  </div>
+
+  <div class="input-card">
+    <div class="input-header">
+      <span class="type-badge prayer" id="current-type-badge">🙏 기도제목</span>
+      <h2 id="current-type-title">새 기도제목을 나눠주세요</h2>
+    </div>
+    <div class="input-row">
+      <div>
+        <select id="input-name">
+          <option value="">이름 선택...</option>
+        </select>
+      </div>
+      <input type="text" id="input-name-other" placeholder="이름 직접 입력" style="display:none;">
+    </div>
+    <label class="anon-toggle">
+      <input type="checkbox" id="input-anon">
+      <span>익명으로 기록하기 (이름 숨김)</span>
+    </label>
+    <textarea id="input-content" placeholder="내용을 자유롭게 적어주세요. (여러 줄 가능)"></textarea>
+    <div class="submit-row">
+      <span class="hint">Ctrl/Cmd + Enter 로 빠르게 저장</span>
+      <button type="button" class="primary" id="btn-submit" onclick="handleSubmit()">+ 기록 추가</button>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button type="button" class="filter-chip active" onclick="setFilter('all', this)">전체</button>
+    <button type="button" class="filter-chip" onclick="setFilter('prayer', this)">🙏 기도제목만</button>
+    <button type="button" class="filter-chip" onclick="setFilter('resolution', this)">✨ 결단/순종만</button>
+    <button type="button" class="filter-chip" onclick="setFilter('active', this)">진행 중</button>
+    <button type="button" class="filter-chip" onclick="setFilter('answered', this)">응답/완료됨</button>
+  </div>
+
+  <div class="timeline" id="timeline">
+    <div class="empty-state">
+      <span class="big">🌱</span>
+      <div>아직 기록이 없습니다.</div>
+      <div style="margin-top:4px; font-size:12px;">첫 기도제목이나 결단을 남겨보세요.</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">저장되었습니다</div>
+
+<!-- ======================================================= -->
+<!-- 일반 script: UI 로직 (Firebase와 완전 독립 작동)           -->
+<!-- ======================================================= -->
+<script>
+  var currentType = 'prayer';
+  var currentFilter = 'all';
+  var allEntries = {};
+  var editingId = null;
+
+  // 기본 명단 (Firebase에 명단이 없을 때 처음 사용)
+  var DEFAULT_NAMES = ['전우열','정혜수','최원석','김세진','강현욱','조은솔','이윤수','권영주','박진우','윤효민'];
+  var memberNames = DEFAULT_NAMES.slice();
+
+  // ===== 설정 패널 =====
+  function toggleSettings() {
+    document.getElementById('settings-panel').classList.toggle('open');
+    renderNameList();
+  }
+
+  function renderNameList() {
+    var box = document.getElementById('name-list');
+    if (!box) return;
+    if (memberNames.length === 0) {
+      box.innerHTML = '<span style="font-size:12px;color:#9c8c7c;">아직 등록된 이름이 없습니다.</span>';
+      return;
+    }
+    box.innerHTML = memberNames.map(function(name) {
+      return '<span class="name-pill">' + escapeHtml(name) +
+        '<button type="button" class="remove" onclick="removeName(\'' + escapeAttr(name) + '\')" title="삭제">×</button></span>';
+    }).join('');
+  }
+
+  function addName() {
+    var input = document.getElementById('new-name-input');
+    var name = input.value.trim();
+    if (!name) { showToast('이름을 입력해 주세요'); return; }
+    if (memberNames.indexOf(name) !== -1) { showToast('이미 있는 이름입니다'); return; }
+    if (typeof window.fbSaveNames !== 'function') { showToast('아직 연결 중입니다.'); return; }
+    var updated = memberNames.concat([name]);
+    window.fbSaveNames(updated).then(function() {
+      input.value = '';
+      showToast(name + ' 님을 명단에 추가했습니다');
+    }).catch(function(e) { showToast('추가 실패: ' + (e.message||'')); });
+  }
+
+  function removeName(name) {
+    if (!confirm('"' + name + '" 님을 명단에서 빼시겠어요?\n(기존 기록은 그대로 남습니다)')) return;
+    if (typeof window.fbSaveNames !== 'function') { showToast('아직 연결 중입니다.'); return; }
+    var updated = memberNames.filter(function(n) { return n !== name; });
+    window.fbSaveNames(updated).then(function() {
+      showToast(name + ' 님을 명단에서 뺐습니다');
+    }).catch(function(e) { showToast('삭제 실패: ' + (e.message||'')); });
+  }
+
+  // 명단이 갱신되면 호출됨 (Firebase에서)
+  function applyNames(names) {
+    if (Array.isArray(names) && names.length > 0) {
+      memberNames = names;
+    }
+    rebuildNameSelect();
+    renderNameList();
+  }
+
+  function rebuildNameSelect() {
+    var sel = document.getElementById('input-name');
+    if (!sel) return;
+    var prev = sel.value;
+    var html = '<option value="">이름 선택...</option>';
+    memberNames.forEach(function(name) {
+      html += '<option value="' + escapeAttr(name) + '">' + escapeHtml(name) + '</option>';
+    });
+    html += '<option value="__other__">+ 직접 입력</option>';
+    sel.innerHTML = html;
+    // 이전 선택 복원 (있으면)
+    if (prev && (memberNames.indexOf(prev) !== -1 || prev === '__other__')) {
+      sel.value = prev;
+    }
+  }
+
+  // ===== 탭/필터 =====
+  function setTab(type, btnEl) {
+    currentType = type;
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    if (btnEl) btnEl.classList.add('active');
+    updateInputUI();
+  }
+
+  function setFilter(filter, btnEl) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-chip').forEach(function(c) { c.classList.remove('active'); });
+    if (btnEl) btnEl.classList.add('active');
+    if (typeof renderTimeline === 'function') renderTimeline();
+  }
+
+  function updateInputUI() {
+    var badge = document.getElementById('current-type-badge');
+    var title = document.getElementById('current-type-title');
+    var textarea = document.getElementById('input-content');
+    if (!badge || !title || !textarea) return;
+    if (currentType === 'prayer') {
+      badge.className = 'type-badge prayer';
+      badge.textContent = '🙏 기도제목';
+      title.textContent = '새 기도제목을 나눠주세요';
+      textarea.placeholder = '예) 이번 주 가족의 건강을 위해 기도해 주세요.';
+    } else {
+      badge.className = 'type-badge resolution';
+      badge.textContent = '✨ 결단/순종';
+      title.textContent = '신앙의 결단과 순종을 기록하세요';
+      textarea.placeholder = '예) 매일 아침 말씀 10분 읽기를 결단합니다.';
+    }
+  }
+
+  function handleSubmit() {
+    var content = document.getElementById('input-content').value.trim();
+    var anon = document.getElementById('input-anon').checked;
+    var nameSelect = document.getElementById('input-name');
+    var nameOther = document.getElementById('input-name-other');
+    var name = '';
+    if (!anon) {
+      name = nameSelect.value === '__other__' ? nameOther.value.trim() : nameSelect.value;
+    }
+    if (!content) {
+      showToast('내용을 입력해 주세요');
+      document.getElementById('input-content').focus();
+      return;
+    }
+    if (!anon && !name) {
+      showToast('이름을 선택하거나 익명으로 기록해 주세요');
+      return;
+    }
+    if (typeof window.fbSubmit !== 'function') {
+      showToast('아직 연결 중입니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+    var entry = {
+      type: currentType,
+      name: anon ? '' : name,
+      anon: anon,
+      content: content,
+      status: 'active',
+      createdAt: new Date().toISOString()
+    };
+    window.fbSubmit(entry).then(function() {
+      document.getElementById('input-content').value = '';
+      document.getElementById('input-anon').checked = false;
+      showToast(currentType === 'prayer' ? '기도제목이 추가되었습니다 🙏' : '결단이 기록되었습니다 ✨');
+    }).catch(function(e) {
+      showToast('저장 실패: ' + (e.message || ''));
+    });
+  }
+
+  function startEdit(id) {
+    editingId = id;
+    renderTimeline();
+    setTimeout(function() {
+      var ta = document.getElementById('edit-textarea-' + id);
+      if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    }, 30);
+  }
+  function cancelEdit() { editingId = null; renderTimeline(); }
+  function saveEdit(id) {
+    var ta = document.getElementById('edit-textarea-' + id);
+    if (!ta) return;
+    var newContent = ta.value.trim();
+    if (!newContent) { showToast('내용을 입력해 주세요'); return; }
+    if (typeof window.fbEdit !== 'function') { showToast('아직 연결 중입니다.'); return; }
+    window.fbEdit(id, newContent).then(function() {
+      editingId = null;
+      showToast('수정되었습니다 ✓');
+      renderTimeline();
+    }).catch(function(e) { showToast('수정 실패: ' + (e.message || '')); });
+  }
+
+  function handleEntryAction(action, id) {
+    if (!id) return;
+    if (action === 'edit') { startEdit(id); return; }
+    if (typeof window.fbAction !== 'function') { showToast('아직 연결 중입니다.'); return; }
+    if (action === 'delete' && !confirm('이 기록을 정말 삭제할까요?\n(복구되지 않습니다)')) return;
+    window.fbAction(action, id).then(function() {
+      if (action === 'delete') showToast('삭제되었습니다');
+      else if (action === 'answered') showToast('응답됨으로 표시했습니다 🙌');
+      else if (action === 'inprogress') showToast('실천 시작!');
+      else if (action === 'done') showToast('완료 표시했습니다 ✓');
+      else if (action === 'revert') showToast('상태를 되돌렸습니다');
+    }).catch(function(e) { showToast('오류: ' + (e.message || '')); });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    rebuildNameSelect();
+    var nameSelect = document.getElementById('input-name');
+    var nameOther = document.getElementById('input-name-other');
+    nameSelect.addEventListener('change', function() {
+      if (nameSelect.value === '__other__') {
+        nameOther.style.display = 'block';
+        nameOther.focus();
+      } else {
+        nameOther.style.display = 'none';
+        nameOther.value = '';
+      }
+    });
+    document.getElementById('input-content').addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleSubmit();
+      }
+    });
+    document.getElementById('new-name-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); addName(); }
+    });
+  });
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+  function escapeAttr(s) {
+    return String(s == null ? '' : s).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  }
+  function fmtDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    var now = new Date();
+    var sameYear = d.getFullYear() === now.getFullYear();
+    var pad = function(n) { return String(n).padStart(2, '0'); };
+    var hm = pad(d.getHours()) + ':' + pad(d.getMinutes());
+    if (sameYear) return (d.getMonth()+1) + '/' + d.getDate() + ' ' + hm;
+    return d.getFullYear() + '.' + pad(d.getMonth()+1) + '.' + pad(d.getDate()) + ' ' + hm;
+  }
+
+  function render() {
+    updateStats();
+    renderTimeline();
+  }
+
+  function updateStats() {
+    var all = Object.values(allEntries);
+    var prayers = all.filter(function(e) { return e.type === 'prayer'; }).length;
+    var resolutions = all.filter(function(e) { return e.type === 'resolution'; }).length;
+    var answered = all.filter(function(e) { return e.status === 'answered' || e.status === 'done'; }).length;
+    document.getElementById('stat-total').textContent = all.length;
+    document.getElementById('stat-prayer').textContent = prayers;
+    document.getElementById('stat-resolution').textContent = resolutions;
+    document.getElementById('stat-answered').textContent = answered;
+  }
+
+  function renderTimeline() {
+    var timeline = document.getElementById('timeline');
+    var list = Object.keys(allEntries).map(function(id) {
+      return Object.assign({ id: id }, allEntries[id]);
+    });
+
+    if (currentFilter === 'prayer') list = list.filter(function(e) { return e.type === 'prayer'; });
+    else if (currentFilter === 'resolution') list = list.filter(function(e) { return e.type === 'resolution'; });
+    else if (currentFilter === 'active') list = list.filter(function(e) { return e.status !== 'answered' && e.status !== 'done'; });
+    else if (currentFilter === 'answered') list = list.filter(function(e) { return e.status === 'answered' || e.status === 'done'; });
+
+    list.sort(function(a, b) { return (b.createdAt || '').localeCompare(a.createdAt || ''); });
+
+    if (list.length === 0) {
+      timeline.innerHTML = '<div class="empty-state"><span class="big">🌱</span><div>' +
+        (currentFilter === 'all' ? '아직 기록이 없습니다.' : '해당 조건의 기록이 없습니다.') +
+        '</div>' +
+        (currentFilter === 'all' ? '<div style="margin-top:4px; font-size:12px;">첫 기도제목이나 결단을 남겨보세요.</div>' : '') +
+        '</div>';
+      return;
+    }
+
+    timeline.innerHTML = list.map(renderEntry).join('');
+  }
+
+  function renderEntry(e) {
+    var isPrayer = e.type === 'prayer';
+    var typeLabel = isPrayer ? '🙏 기도제목' : '✨ 결단/순종';
+    var doneState = e.status === 'answered' || e.status === 'done';
+
+    var nameDisplay = e.anon
+      ? '<span class="entry-name anon">익명</span>'
+      : '<span class="entry-name">' + escapeHtml(e.name || '이름 없음') + '</span>';
+
+    if (editingId === e.id) {
+      return '<div class="entry">' +
+        '<div class="entry-top">' +
+          '<span class="entry-type ' + e.type + '">' + typeLabel + '</span>' +
+          nameDisplay +
+          '<span class="entry-date">' + fmtDate(e.createdAt) + '</span>' +
+        '</div>' +
+        '<div class="edit-area">' +
+          '<textarea id="edit-textarea-' + e.id + '">' + escapeHtml(e.content) + '</textarea>' +
+          '<div class="edit-buttons">' +
+            '<button type="button" class="primary" onclick="saveEdit(\'' + e.id + '\')">저장</button>' +
+            '<button type="button" onclick="cancelEdit()">취소</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    var statusBadge = '';
+    if (e.status === 'answered') statusBadge = '<span class="status-badge answered">✓ 응답됨</span>';
+    else if (e.status === 'inprogress') statusBadge = '<span class="status-badge inprogress">● 실천 중</span>';
+    else if (e.status === 'done') statusBadge = '<span class="status-badge done">✓ 완료</span>';
+
+    var statusButtons = '';
+    if (isPrayer) {
+      if (e.status === 'answered') {
+        statusButtons = '<button type="button" class="mini-btn" onclick="handleEntryAction(\'revert\', \'' + e.id + '\')">응답 취소</button>';
+      } else {
+        statusButtons = '<button type="button" class="mini-btn" onclick="handleEntryAction(\'answered\', \'' + e.id + '\')">🙌 응답됨</button>';
+      }
+    } else {
+      if (e.status === 'done') {
+        statusButtons = '<button type="button" class="mini-btn" onclick="handleEntryAction(\'revert\', \'' + e.id + '\')">완료 취소</button>';
+      } else if (e.status === 'inprogress') {
+        statusButtons =
+          '<button type="button" class="mini-btn" onclick="handleEntryAction(\'done\', \'' + e.id + '\')">✓ 완료</button>' +
+          '<button type="button" class="mini-btn" onclick="handleEntryAction(\'revert\', \'' + e.id + '\')">실천 취소</button>';
+      } else {
+        statusButtons =
+          '<button type="button" class="mini-btn" onclick="handleEntryAction(\'inprogress\', \'' + e.id + '\')">▶ 실천 시작</button>' +
+          '<button type="button" class="mini-btn" onclick="handleEntryAction(\'done\', \'' + e.id + '\')">✓ 완료</button>';
+      }
+    }
+
+    var editedMark = e.editedAt
+      ? '<div class="entry-edited">✏️ ' + fmtDate(e.editedAt) + ' 수정됨</div>'
+      : '';
+
+    return '<div class="entry ' + (doneState ? 'done' : '') + '">' +
+      '<div class="entry-top">' +
+        '<span class="entry-type ' + e.type + '">' + typeLabel + '</span>' +
+        nameDisplay +
+        statusBadge +
+        '<span class="entry-date">' + fmtDate(e.createdAt) + '</span>' +
+      '</div>' +
+      '<div class="entry-content">' + escapeHtml(e.content) + '</div>' +
+      editedMark +
+      '<div class="entry-footer">' +
+        statusButtons +
+        '<div class="entry-actions">' +
+          '<button type="button" class="mini-btn" onclick="handleEntryAction(\'edit\', \'' + e.id + '\')">✏️ 수정</button>' +
+          '<button type="button" class="mini-btn danger" onclick="handleEntryAction(\'delete\', \'' + e.id + '\')">삭제</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { t.classList.remove('show'); }, 1800);
+  }
+
+  function setBannerStatus(status, msg) {
+    var banner = document.getElementById('share-banner');
+    var statusEl = document.getElementById('share-status');
+    banner.classList.remove('offline');
+    if (status === 'ok') {
+      statusEl.textContent = '🔥 온유목장 실시간 공유 중 · 누적 기록 중';
+    } else {
+      banner.classList.add('offline');
+      statusEl.textContent = msg || '오프라인';
+    }
+  }
+  function updateSyncInfo(iso) {
+    var d = new Date(iso);
+    var pad = function(n) { return String(n).padStart(2,'0'); };
+    document.getElementById('sync-info').textContent =
+      '최근 업데이트 ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+
+  updateInputUI();
+</script>
+
+<!-- ======================================================= -->
+<!-- Module: Firebase 통신만 담당                             -->
+<!-- ======================================================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCOuh9m_QK0HpDgCKVBUW0cp7viyQTrPE4",
+  authDomain: "mokjang-checklist.firebaseapp.com",
+  databaseURL: "https://mokjang-checklist-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "mokjang-checklist",
+  storageBucket: "mokjang-checklist.firebasestorage.app",
+  messagingSenderId: "354367774746",
+  appId: "1:354367774746:web:a1a64063e32684287cb1a3"
+};
+
+const ROOM_ID = 'onyu';
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const dataRef = ref(db, `prayers-resolutions/${ROOM_ID}`);
+  const namesRef = ref(db, `member-names/${ROOM_ID}`);
+
+  // 기록 실시간 동기화
+  onValue(dataRef, (snapshot) => {
+    window.allEntries = snapshot.val() || {};
+    if (typeof window.render === 'function') window.render();
+  }, (error) => {
+    console.error('Firebase 오류:', error);
+    window.setBannerStatus && window.setBannerStatus('offline', '연결 오류: ' + error.message);
+  });
+
+  // 명단 실시간 동기화
+  onValue(namesRef, (snapshot) => {
+    const names = snapshot.val();
+    if (typeof window.applyNames === 'function') {
+      window.applyNames(names);
+    }
+  });
+
+  const connectedRef = ref(db, '.info/connected');
+  onValue(connectedRef, (snap) => {
+    if (snap.val() === true) window.setBannerStatus && window.setBannerStatus('ok');
+    else window.setBannerStatus && window.setBannerStatus('offline', '인터넷 연결 확인 중...');
+  });
+
+  window.fbSubmit = async (entry) => {
+    const newRef = push(dataRef);
+    await set(newRef, entry);
+    window.updateSyncInfo && window.updateSyncInfo(entry.createdAt);
+  };
+
+  window.fbEdit = async (id, newContent) => {
+    const entryRef = ref(db, `prayers-resolutions/${ROOM_ID}/${id}`);
+    await update(entryRef, { content: newContent, editedAt: new Date().toISOString() });
+  };
+
+  window.fbAction = async (action, id) => {
+    const entryRef = ref(db, `prayers-resolutions/${ROOM_ID}/${id}`);
+    if (action === 'delete') {
+      await remove(entryRef);
+    } else if (action === 'answered') {
+      await update(entryRef, { status: 'answered', answeredAt: new Date().toISOString() });
+    } else if (action === 'inprogress') {
+      await update(entryRef, { status: 'inprogress' });
+    } else if (action === 'done') {
+      await update(entryRef, { status: 'done', doneAt: new Date().toISOString() });
+    } else if (action === 'revert') {
+      await update(entryRef, { status: 'active' });
+    }
+  };
+
+  // 명단 저장 (배열)
+  window.fbSaveNames = async (namesArray) => {
+    await set(namesRef, namesArray);
+  };
+} catch (e) {
+  console.error('Firebase 초기화 실패:', e);
+  window.setBannerStatus && window.setBannerStatus('offline', '초기화 실패: ' + e.message);
+}
+</script>
+</body>
+</html>
